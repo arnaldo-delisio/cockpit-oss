@@ -1,0 +1,84 @@
+# publish/manifest.txt, version 1
+#
+# The single source of truth for what does NOT travel into the public export.
+# publish/publish.sh reads this file, and nothing else, to decide exclusions.
+#
+# Syntax, one rule per line:
+#   path/          directory prefix, excludes the directory and everything under it
+#   path/*.md      glob, matched against the repo relative path
+#   path/file.md   exact repo relative path
+#   !path          negation, keeps a path an earlier rule excluded
+#   ?path/         expected zero, a defensive rule that is allowed to match no file
+#   # comment      ignored, as are blank lines
+#
+# Every rule without the ? prefix must match at least one tracked file. A rule that
+# matches nothing is treated as a typo and fails verification, since a typo silently
+# protects nothing. Use ? only where matching nothing is the correct outcome, such as
+# a path that is already gitignored and listed here as a second layer.
+#
+# Order matters only for negations: a negation wins over any rule above or below it.
+#
+# The export is built from `git ls-files`, so untracked and gitignored files never
+# enter it by construction. Rules here are the second layer: tracked files that are
+# real but private.
+
+# ── Private data and workspaces ───────────────────────────────────────────────
+# The dashboard is a separate repo and is already gitignored. Listed anyway so a
+# future tracking mistake cannot leak it.
+?dashboard/
+# Memory graph, scope workspaces, research artifacts, resume packets. All owner data.
+?memory/
+?scopes/
+?artifacts/
+?handoff/
+
+# ── Secrets ───────────────────────────────────────────────────────────────────
+# Real env files never travel. The example file is documentation and does travel.
+?.env
+?.env.*
+!.env.example
+
+# ── Owner's decision ledger ───────────────────────────────────────────────────
+# The engine ships the ledger MECHANISM, not the owner's entries. Anyone running
+# the engine writes their own ledger.
+DECISIONS.md
+DECISIONS-ARCHIVE.md
+decisions/
+
+# ── Superseded planning ───────────────────────────────────────────────────────
+# Dated one-off VPS migration planning. shells/ carries the live version.
+port/
+
+# ── Local scratch state ───────────────────────────────────────────────────────
+# Design skill working state, machine local and meaningless elsewhere.
+.impeccable/
+
+# ── Third party code with unverified redistribution rights ────────────────────
+# A vendored copy of a third party plugin skill. No LICENSE file was found in it,
+# so we do not redistribute it. The rest of .claude/ is ours and travels:
+# settings.json, agents/, output-styles/.
+.claude/skills/
+
+# ── Personal records inside otherwise public skills ───────────────────────────
+# Session records from real work, kept as skill references.
+skills/session-handoff/references/2026-07-06-checkpoint-before-handoff.md
+skills/session-handoff/references/2026-07-06-job-search-generic-driving-handoff.md
+# Personal viewing notes.
+skills/watch/references/*-video.md
+# Per-owner learned preferences. A self-upgrading skill accretes these from one person's
+# feedback over time, so they mean nothing to another user. Each install grows its own.
+skills/*/LEARNED.md
+
+# ── This tooling ──────────────────────────────────────────────────────────────
+# The export machinery ships. It is engine code, it carries no private content, and
+# shipping it makes the public boundary self-documenting: a reader can see exactly
+# what is held back and why. One file is the exception.
+#
+# publish/private-terms.txt is the scrub list that keeps private names out of the
+# generated DECISIONS-INDEX.md. It is a list of exactly the words that are
+# sensitive, so shipping it would hand a reader the map it exists to hide. The
+# generator that reads it ships, and the index it produces ships: the mechanism is
+# public, the vocabulary is not. No ? marker, because the file is tracked and this
+# rule must match. A run where it matches nothing means the file was renamed or
+# deleted, and the scrub is silently gone.
+publish/private-terms.txt

@@ -1,0 +1,21 @@
+{
+  "core": ["codex-review", "generate-image", "history-search", "notion", "read", "session-handoff", "questions", "teach", "research-storm", "watch", "write"],
+  "optional": ["day", "taste", "last30days"],
+  "requires": {
+    "watch": { "bin": ["ffmpeg", "yt-dlp", "uv"], "env": ["GROQ_API_KEY"] },
+    "last30days": { "bin": ["python3", "yt-dlp", "xurl"], "env": ["SCRAPECREATORS_API_KEY"] },
+    "codex-review": { "bin": ["codex"] },
+    "notion": { "bin": ["python3"] },
+    "read": { "bin": ["python3", "uv", "node"] },
+    "generate-image": { "bin": ["codex"] }
+  },
+  "vendored": {
+    "last30days": {
+      "repo": "https://github.com/mvanhorn/last30days-skill",
+      "commit": "52f53312ff2f272e16bbc1785e1c04f9d9c19b31",
+      "subdir": "skills/last30days",
+      "excluded": "upstream .skillignore non-runtime set (assets/, agents/, dev scripts)",
+      "local_patches": ["scripts/lib/xurl_x.py: stored_auth_status accepts current xurl's ~/.xurl directory layout (auth.yml) alongside the legacy single-file store"]
+    }
+  }
+}

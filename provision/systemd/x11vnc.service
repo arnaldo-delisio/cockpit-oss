@@ -1,0 +1,17 @@
+[Unit]
+Description=x11vnc on the Xvfb display, localhost only, viewed over an SSH tunnel (layout §10)
+Requires=xvfb.service
+After=xvfb.service
+
+[Service]
+# -localhost: never listens on a public interface; view with
+#   ssh -L 5900:127.0.0.1:5900 cockpit-vps
+# then a VNC client on 127.0.0.1:5900. The hcloud firewall allows SSH only anyway; this is
+# defense in depth, no open VNC port either way.
+# Password file lives OUTSIDE the repo trees; create it once by hand before first start:
+#   x11vnc -storepasswd ~/.config/cockpit/x11vnc.pass && chmod 600 ~/.config/cockpit/x11vnc.pass
+ExecStart=/usr/bin/x11vnc -display :99 -localhost -rfbauth %h/.config/cockpit/x11vnc.pass -forever -shared
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

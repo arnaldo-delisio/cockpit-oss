@@ -1,0 +1,26 @@
+/* Semantic, role-named design tokens. Scaffolded into the repo by /taste.
+   Spacing values are decided ONCE here and consumed by the layout primitives.
+   On composed surfaces, never reach past these into raw Tailwind spacing utilities. */
+:root {
+  /* Spacing — role-named, all on the 4px scale */
+  --space-page-padding: 1.5rem;   /* 24 */
+  --space-section-gap: 4rem;      /* 64 — rhythm between page sections */
+  --space-stack-gap: 1rem;        /* 16 — default vertical rhythm */
+  --space-cluster-gap: 0.75rem;   /* 12 — inline groups (buttons, tags) */
+  --space-card-padding: 1.5rem;   /* 24 — internal card padding (symmetric) */
+  --space-card-gap: 1rem;         /* 16 — gap between cards in a grid */
+  --space-field-gap: 0.5rem;      /* 8  — label↔input */
+
+  /* Measure & widths */
+  --content-max: 72rem;           /* page content cap */
+  --measure: 65ch;                /* max line length for body text */
+
+  /* Surface treatment — keep consistent so cards/buttons read as siblings */
+  --radius-card: 0.75rem;
+  --radius-control: 0.5rem;
+  --shadow-card: 0 1px 3px rgb(0 0 0 / 0.08), 0 1px 2px rgb(0 0 0 / 0.04);
+
+  /* Type scale — limited set; do not introduce ad-hoc sizes */
+  --text-xs: 0.75rem; --text-sm: 0.875rem; --text-base: 1rem;
+  --text-lg: 1.125rem; --text-xl: 1.5rem; --text-2xl: 2rem; --text-3xl: 3rem;
+}

@@ -1,0 +1,11 @@
+[Unit]
+Description=Xvfb virtual display :99 for the headed browser lane (port layout §10)
+
+[Service]
+# Headed Chrome runs against this display; unattended is headed-under-Xvfb, never headless
+# (browser-agent-capabilities doctrine).
+ExecStart=/usr/bin/Xvfb :99 -screen 0 1920x1080x24 -nolisten tcp
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

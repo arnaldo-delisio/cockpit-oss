@@ -1,0 +1,19 @@
+{
+  "name": "cockpit-memory-engine",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Cockpit memory layer — capture + single-writer reconciler + in-process retrieval (DESIGN.md).",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "bootstrap": "node bootstrap.mjs",
+    "reconcile": "node reconcile.mjs",
+    "test": "node --import ./test/setup.mjs --test \"test/*.test.mjs\""
+  },
+  "dependencies": {
+    "@huggingface/transformers": "4.2.0",
+    "js-yaml": "5.1.0"
+  }
+}

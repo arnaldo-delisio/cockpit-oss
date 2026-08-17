@@ -1,0 +1,16 @@
+[Unit]
+Description=Cockpit memory reconciler, nightly "dreaming" reflect pass (DESIGN §5/§8)
+Documentation=file:%h/cockpit/memory-engine/DESIGN.md
+
+[Service]
+Type=oneshot
+# dream.sh sets PATH (hermes lives in ~/.local/bin), tees output to memory/.reconciler/ logs,
+# and exits non-zero if any step failed, so a bad run shows as failed here.
+ExecStart=%h/cockpit/memory-engine/dream.sh
+# Secrets and adapter settings (layout §7): units source nothing from .bashrc, so the env
+# file must be loaded here.
+EnvironmentFile=-%h/.config/cockpit/env
+# Cap so a hung run cannot wedge the timer forever; 1800 proved too tight on the laptop
+# (the reflect pass alone hit ~24 min with projection judge() calls still to run).
+TimeoutStartSec=3600
+Nice=10

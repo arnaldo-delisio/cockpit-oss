@@ -1,0 +1,114 @@
+{
+  "_comment": "Rendered by bootstrap.mjs --write-settings into ~/.claude/settings.json ({{REPO_ROOT}} and {{HOME}} are substituted). Ported from the live 2026-07-24 hook entries. The {{HOME}}/.claude helper scripts (sync-cockpit-skills.sh, sudo-guard.js, statusline) are laptop-local and not part of the engine repo; their entries install only where those files exist.",
+  "autoMemoryEnabled": false,
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"{{HOME}}/.claude/hooks/sudo-guard.js\""
+          }
+        ]
+      },
+      {
+        "matcher": "Skill",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"{{REPO_ROOT}}/skills/taste/taste-hook.mjs\" inject"
+          },
+          {
+            "type": "command",
+            "command": "node \"{{REPO_ROOT}}/skills/questions/questions-hook.mjs\" inject"
+          },
+          {
+            "type": "command",
+            "command": "node \"{{REPO_ROOT}}/skills/write/write-hook.mjs\" inject"
+          },
+          {
+            "type": "command",
+            "command": "node \"{{REPO_ROOT}}/skills/day/day-hook.mjs\" inject"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"{{REPO_ROOT}}/memory-engine/recall-hook.mjs\""
+          },
+          {
+            "type": "command",
+            "command": "node \"{{REPO_ROOT}}/skills/history-search/history-search.mjs\" hook"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"{{REPO_ROOT}}/memory-engine/capture.mjs\""
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"{{REPO_ROOT}}/memory-engine/capture.mjs\""
+          },
+          {
+            "type": "command",
+            "command": "node \"{{REPO_ROOT}}/skills/taste/taste-hook.mjs\" capture"
+          },
+          {
+            "type": "command",
+            "command": "node \"{{REPO_ROOT}}/skills/questions/questions-hook.mjs\" capture"
+          },
+          {
+            "type": "command",
+            "command": "node \"{{REPO_ROOT}}/skills/write/write-hook.mjs\" capture"
+          },
+          {
+            "type": "command",
+            "command": "node \"{{REPO_ROOT}}/skills/day/day-hook.mjs\" capture"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"{{REPO_ROOT}}/memory-engine/capture.mjs\""
+          },
+          {
+            "type": "command",
+            "command": "node \"{{REPO_ROOT}}/skills/taste/taste-hook.mjs\" capture"
+          },
+          {
+            "type": "command",
+            "command": "node \"{{REPO_ROOT}}/skills/questions/questions-hook.mjs\" capture"
+          },
+          {
+            "type": "command",
+            "command": "node \"{{REPO_ROOT}}/skills/write/write-hook.mjs\" capture"
+          },
+          {
+            "type": "command",
+            "command": "node \"{{REPO_ROOT}}/skills/day/day-hook.mjs\" capture"
+          }
+        ]
+      }
+    ]
+  }
+}

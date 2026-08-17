@@ -1,0 +1,61 @@
+#cloud-config
+# cloud-init.yaml, canonical fleet template (port layout §9/§11, vps-fresh-start Phase 4).
+# (`#cloud-config` must be the literal first line, so this header sits below it.)
+#
+# The current cockpit VPS (Hetzner CX33 `cockpit`, nbg1) was provisioned 2026-07-24 with an
+# equivalent configuration; this file is the reproducibility artifact and the canonical
+# template for every future fleet box. It reproduces: a non-root user with passwordless
+# sudo, SSH key-only auth, root login off, 4 GB swap, unattended security upgrades, on
+# Ubuntu 24.04. Inbound filtering is the hcloud firewall `cockpit-fw` (SSH + mosh UDP
+# 60000-61000 + ICMP only), applied at server creation by provision.sh, not here.
+#
+# provision.sh substitutes __SSH_PUBLIC_KEY__ with the per-target public key (one ed25519
+# keypair per box, generated on the laptop, layout §9; no master key), and __USERNAME__ with
+# the non-root account name (provision.sh --user, default `cockpit`).
+users:
+  - name: __USERNAME__
+    groups: [sudo]
+    shell: /bin/bash
+    sudo: "ALL=(ALL) NOPASSWD:ALL"
+    ssh_authorized_keys:
+      - __SSH_PUBLIC_KEY__
+
+ssh_pwauth: false
+disable_root: true
+
+package_update: true
+package_upgrade: true
+packages:
+  - unattended-upgrades
+  - ufw
+
+swap:
+  filename: /swapfile
+  size: 4294967296
+
+write_files:
+  # Harden sshd beyond the cloud-init defaults: no root login, keys only.
+  - path: /etc/ssh/sshd_config.d/90-cockpit-hardening.conf
+    content: |
+      PermitRootLogin no
+      PasswordAuthentication no
+      KbdInteractiveAuthentication no
+
+runcmd:
+  - systemctl restart ssh
+  # Host firewall, default deny inbound except SSH (layout §9); defense in depth alongside
+  # the hcloud firewall cockpit-fw.
+  - ufw default deny incoming
+  - ufw default allow outgoing
+  - ufw allow OpenSSH
+  # mosh server ports (the launchers connect over mosh; the hcloud firewall carries the
+  # matching rule via provision.sh).
+  - ufw allow 60000:61000/udp
+  - ufw --force enable
+  # Ubuntu 24.04 ships unattended-upgrades with security updates enabled by default once
+  # the package is installed; this makes the periodic timer explicit.
+  - |
+    printf '%s\n' \
+      'APT::Periodic::Update-Package-Lists "1";' \
+      'APT::Periodic::Unattended-Upgrade "1";' \
+      > /etc/apt/apt.conf.d/20auto-upgrades
